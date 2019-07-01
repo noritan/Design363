@@ -56,7 +56,7 @@ always @(posedge clock or posedge reset) begin
             state_reg <= ST_ADD;
         end
         ST_ADD: begin       // Add D0 into A0
-            if (~f0_empty) begin
+            if (f0_empty[1:0] == 2'b00) begin
                 state_reg <= ST_GET;
             end else begin
                 state_reg <= ST_IDLE;
@@ -96,7 +96,7 @@ always @(state) begin
 end
 
 // FIFO status for BUS
-assign      idrq = (f0_not_full == 2'b11);
+assign      idrq = (f0_not_full[1:0] == 2'b11);
 
 // BUSY status flag
 assign      busy = busy_reg;
@@ -221,8 +221,8 @@ cy_psoc3_dp16 #(.cy_dpconfig_a(
         /*  output  [01:00]                  */  .co_msb(),
         /*  output  [01:00]                  */  .cmsb(),
         /*  output  [01:00]                  */  .so(),
-        /*  output  [01:00]                  */  .f0_bus_stat(f0_not_full),
-        /*  output  [01:00]                  */  .f0_blk_stat(f0_empty),
+        /*  output  [01:00]                  */  .f0_bus_stat(f0_not_full[1:0]),
+        /*  output  [01:00]                  */  .f0_blk_stat(f0_empty[1:0]),
         /*  output  [01:00]                  */  .f1_bus_stat(),
         /*  output  [01:00]                  */  .f1_blk_stat()
 );
