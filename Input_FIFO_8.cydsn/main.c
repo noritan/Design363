@@ -12,6 +12,9 @@
 #include "project.h"
 #include <stdio.h>
 
+#define REQ     (1)
+#define BUSY    (2)
+
 const uint8 inData[10] = {1,2,3,4,5,6,7,8,9,10};
 
 int main(void) {
@@ -31,12 +34,12 @@ int main(void) {
         
         // Add ten values into accumulator
         for (i = 0; i < (sizeof inData / sizeof *inData); i++) {
-            while (!SR1_Read()) ;
+            while (!(SR1_Read() & REQ)) ;
             ACC_WriteValue(inData[i]);
         }
         
         // Wait for calculation completed.
-        CyDelay(5000);
+        while (SR1_Read() & BUSY) ;
         
         // Get the calculation result
         result = ACC_ReadAccumulator();
