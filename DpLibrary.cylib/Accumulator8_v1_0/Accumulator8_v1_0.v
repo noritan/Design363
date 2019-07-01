@@ -56,7 +56,11 @@ always @(posedge clock or posedge reset) begin
             state_reg <= ST_ADD;
         end
         ST_ADD: begin       // Add D0 into A0
-            state_reg <= ST_IDLE;
+            if (!f0_empty) begin
+                state_reg <= ST_GET;
+            end else begin
+                state_reg <= ST_IDLE;
+            end
         end
         default: begin      // Unidentified state
             state_reg <= ST_IDLE;
