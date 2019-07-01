@@ -10,8 +10,8 @@
  * ========================================
 */
 
-#if !defined(ACCUMULATOR16_`$INSTANCE_NAME`_H)
-#define ACCUMULATOR16_`$INSTANCE_NAME`_H
+#if !defined(ACCUMULATOR32_`$INSTANCE_NAME`_H)
+#define ACCUMULATOR32_`$INSTANCE_NAME`_H
 
 #include "cyfitter.h"
 #include "cytypes.h"
@@ -31,5 +31,5 @@ void `$INSTANCE_NAME`_ClearAccumulator(void);
 #define `$INSTANCE_NAME`_ACCUMULATOR_REG (* (reg32 *) `$INSTANCE_NAME`_dp_u0__A0_REG)
 #define `$INSTANCE_NAME`_ACCUMULATOR_PTR (  (reg32 *) `$INSTANCE_NAME`_dp_u0__A0_REG)
 
-#endif  // ACCUMULATOR16_`$INSTANCE_NAME`_H
+#endif  // ACCUMULATOR32_`$INSTANCE_NAME`_H
 /* [] END OF FILE */
