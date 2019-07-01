@@ -9,6 +9,7 @@
 <projects>
 <v>.\Input_FIFO_8.cydsn\Input_FIFO_8.cyprj</v>
 <v>.\Input_FIFO_16.cydsn\Input_FIFO_16.cyprj</v>
+<v>.\DpLibrary.cylib\DpLibrary.cyprj</v>
 </projects>
 <workspace_id v="60de151e-25a7-43b6-b0f3-6a8f518baefe" />
 <WriteAppVersionLastSavedWith v="4.2.0.641" />
