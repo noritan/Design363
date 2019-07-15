@@ -15,7 +15,7 @@
 // Generated on 06/27/2019 at 21:37
 // Component: Accumulator16_v1_0
 module Accumulator16_v1_0 (
-	output  idrq,
+	output  dreq,
     output  busy,
 	input   clock,
 	input   reset
@@ -95,8 +95,8 @@ always @(state) begin
     endcase
 end
 
-// FIFO status for BUS
-assign      idrq = (f0_not_full[1:0] == 2'b11);
+// Assert Data REQuest if there is no FULL FIFO
+assign      dreq = (f0_not_full[1:0] == 2'b11);
 
 // BUSY status flag
 assign      busy = busy_reg;
