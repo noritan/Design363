@@ -46,6 +46,7 @@ reg             busy_reg;       // BUSY output flag
 reg [1:0]       state_reg;
 always @(posedge clock or posedge reset) begin
     if (reset) begin
+        state_reg <= ST_IDLE;
     end else casez(state)
         ST_IDLE: begin      // Wait for FIFO not empty
             if (f0_empty[1:0] == 2'b00) begin
