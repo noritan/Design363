@@ -96,8 +96,8 @@ always @(state) begin
     endcase
 end
 
-// Assert Data REQuest if there is no FULL FIFO
-assign      dreq = (f0_not_full[1:0] == 2'b11);
+// Assert Data REQuest if MSB FIFO is not FULL
+assign      dreq = f0_not_full[1];
 
 // BUSY status flag
 assign      busy = busy_reg;
