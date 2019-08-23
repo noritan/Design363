@@ -3,7 +3,7 @@
 <!--This file is machine generated and read. It is not intended to be edited by hand.-->
 <!--Due to this, there is no schema for this file.-->
 <CyGuid_2867d519-54d2-4c01-9830-c51cb08bc3dd type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWorkspaceSerialize" version="5" xml_contents_version="3" name="Design363" persistent="Design363.cywrk" platform="NOT_USED">
-<current_project name=".\UartTxTest01.cydsn\UartTxTest01.cyprj" />
+<current_project name=".\UartTxTest02.cydsn\UartTxTest02.cyprj" />
 <wrkspc_folders />
 <files />
 <projects>
@@ -15,6 +15,7 @@
 <v>.\Accumulator8Test01.cydsn\Accumulator8Test01.cyprj</v>
 <v>.\Accumulator16Test01.cydsn\Accumulator16Test01.cyprj</v>
 <v>.\UartTxTest01.cydsn\UartTxTest01.cyprj</v>
+<v>.\UartTxTest02.cydsn\UartTxTest02.cyprj</v>
 </projects>
 <workspace_id v="60de151e-25a7-43b6-b0f3-6a8f518baefe" />
 <WriteAppVersionLastSavedWith v="4.2.0.641" />
