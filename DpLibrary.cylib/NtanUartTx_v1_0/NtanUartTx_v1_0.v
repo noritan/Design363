@@ -116,24 +116,25 @@ always @(state) begin
 end
 
 // TX output behavior
+// Implemented in negative logic
 always @(posedge reset or posedge clock) begin
     if (reset) begin
-            tx_reg <= 1'b1;
+            tx_reg <= 1'b0;  // MARK
     end else casez (state)
         ST_IDLE:
-            tx_reg <= 1'b1;
+            tx_reg <= 1'b0;  // MARK
         ST_START:
-            tx_reg <= 1'b0;
+            tx_reg <= 1'b1;  // SPACE
         ST_SHIFT0, ST_SHIFT1, ST_SHIFT2, ST_SHIFT3,
         ST_SHIFT4, ST_SHIFT5, ST_SHIFT6, ST_SHIFT7:
-            tx_reg <= so;
+            tx_reg <= ~so;
         ST_STOP:
-            tx_reg <= 1'b1;
+            tx_reg <= 1'b0;  // MARK
         default:
-            tx_reg <= 1'b1;
+            tx_reg <= 1'b0;  // MARK
     endcase
 end
-assign tx = tx_reg;
+assign tx = ~tx_reg;
 
 // DREQ output behavior
 assign dreq = f0_not_full;
