@@ -30,7 +30,7 @@ slide: false
 
 ハードウェアを表現するための**Verilog**記述は、いくつかの部分から構成されています。
 
-```verilog:NtanUartTx_v1_0.v
+```Verilog:NtanUartTx_v1_0.v
 module NtanUartTx_v1_0 (
 	output  dreq,
 	output  tx,
@@ -70,7 +70,7 @@ localparam      CS_SR       = 3'b010;
 このコンポーネントでは、8個のうち3個の設定だけを使っています。
 プリフィックスとして`CS_`を付けた定数でそれぞれの設定を示しています。
 
-```verilog:NtanUartTx_v1_0.v
+```Verilog:NtanUartTx_v1_0.v
 // Wire declaration
 wire[3:0]       state;          // State code
 wire            f0_empty;       // F0 is EMPTY
@@ -92,7 +92,7 @@ reg             tx_reg;         // DFF for output
 
 `tx`出力には、**DFF**を追加して、完全にクロックに同期したグリッチの無い出力が得られるようになっています。
 
-```verilog:NtanUartTx_v1_0.v
+```Verilog:NtanUartTx_v1_0.v
 // State machine behavior
 reg [3:0]       state_reg;
 always @(posedge reset or posedge clock) begin
