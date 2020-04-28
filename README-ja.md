@@ -134,10 +134,13 @@ end
 assign      state = state_reg;
 ```
 
-ステートマシンは、状態遷移だけが定義されています。**FIFO**にデータが到着したら(`~f0_empty`)**UART**の信号生成シーケンスが走ります。一つの状態が一つのビットクロックに対応しているので、ベタなぶん記述は多くなりますが簡単です。
+ステートマシンは、状態遷移だけが定義されています。
+**FIFO**にデータが到着したら(`~f0_empty`)**UART**の信号生成シーケンスが走ります。
+一つの状態が一つのビットクロックに対応しているので、ベタなぶん記述は多くなりますが簡単です。
+
 `ST_STOP`で最後のSTOPビットを送ったあと、次のデータが**FIFO**に到着していれば`ST_START`に遷移するので、二つのキャラクタの間に隙間を入れずに送信することができます。
 
-```verilog:NtanUartTx_v1_0.v
+```Verilog:NtanUartTx_v1_0.v
 // Internal control signals
 always @(state) begin
     casez (state)
@@ -162,11 +165,12 @@ end
 ```
 
 ステートマシンの状態によって内部信号が決定されます。
-このコンポーネントでは、内部信号はデータパスの動作を決める`addr`だけになりました。
+
+このコンポーネントの内部信号は、データパスの動作を決める`addr`だけになりました。
 `ST_START`で`CS_LOAD`動作によって**FIFO**から`A0`レジスタにデータを取り出します。
 `A0`に取り出されたデータは、`ST_SHIFT0`から`ST_SHIFT7`まで1ビットずつシフトされて送信に使用されます。
 
-```verilog:NtanUartTx_v1_0.v
+```Verilog:NtanUartTx_v1_0.v
 // TX output behavior
 // Implemented in negative logic
 always @(posedge reset or posedge clock) begin
@@ -195,12 +199,15 @@ assign dreq = f0_not_full;
 ふたつの出力`tx`と`dreq`の振る舞いがここで決められます。
 
 すでに述べたように、`tx`出力は、レジスタ`tx_reg`で受けることによってクロック同期にしています。
-この時、`tx`出力をそのまま`tx_reg`に入れると、リセットの時に`tx_reg`が`1`になってしまいます。これに対して、**PSoC**の**UDB**では、**DFF**の初期状態が`0`であるためにリセット直後にエッジが現れてしまいます。
-これを簡単に解決するために、`tx_reg`の論理を負論理にしてしまいました。具体的にはリセット状態で`0`になるようにしています。これによって、リセット後でもエッジが観測されなくなりました。
+この時、`tx`出力をそのまま`tx_reg`に入れると、リセットの時に`tx_reg`が`1`になってしまいます。
+これに対して、**PSoC**の**UDB**では、**DFF**の初期状態が`0`であるためにリセット直後に立ち上がりエッジが現れてしまいます。
+これを簡単に解決するために、`tx_reg`の論理を負論理にしてしまいました。
+具体的にはリセット状態で`0`になるようにしています。
+これによって、リセット後にエッジが観測されなくなりました。
 
 `dreq`出力には、**FIFO**の状態を表す`f0_not_full`信号がそのまま使用できます。
 
-```verilog:NtanUartTx_v1_0.v
+```Verilog:NtanUartTx_v1_0.v
 cy_psoc3_dp #(.cy_dpconfig(
 {
     `CS_ALU_OP_PASS, `CS_SRCA_A0, `CS_SRCB_D0,
@@ -304,7 +311,8 @@ cy_psoc3_dp #(.cy_dpconfig(
 endmodule
 ```
 
-最後は、データパスです。以下の入出力信号を接続しています。
+最後は、データパスです。
+以下の入出力信号を接続しています。
 
 |端子名|信号名|概要|
 |:--|:--|:--|
@@ -317,7 +325,7 @@ endmodule
 
 データパスの動作は`Datapath Configuration Tool`を使用しています。
 
-![GS004487.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/224737/acc8c75c-0a50-1b53-80bc-a052a8c22d0d.png "データパスの設定")
+![データパスの設定](./images/datapathConfiguration.png "データパスの設定")
 
 
 ## APIファイル
