@@ -330,7 +330,8 @@ endmodule
 
 ## APIファイル
 
-このコンポーネントのAPIは、ヘッダファイルとソースファイルに記述されています。ここでは、インスタンスに展開後の記述を紹介します。
+このコンポーネントのAPIは、ヘッダファイルとソースファイルに記述されています。
+ここでは、インスタンスに展開後の記述を紹介します。
 
 ```C:UartTx.h
 #if !defined(NTANUARTTX_UartTx_H)
@@ -346,8 +347,11 @@ extern void UartTx_WriteValue(uint8 value);
 #endif // NTANUARTTX_UartTx_H
 ```
 
-前半では、送信データを受け付けるレジスタとそのアドレスが定義されています。これらはAPI内部で使用されるほか、**DMA**の設定でも使用されます。
-後半では、送信データを書き込むための関数`UartTx_WriteValue()`が宣言されています。実態は、以下のソースファイルにあります。
+ヘッダファイル "UartTx.h" の前半では、送信データを受け付けるレジスタとそのアドレスが定義されています。
+これらはAPI内部で使用されるほか、**DMA**の設定でも使用されます。
+
+後半では、送信データを書き込むための関数`UartTx_WriteValue()`が宣言されています。
+実態は、以下のソースファイルにあります。
 
 ```C:UartTx.c
 #include "UartTx.h"
@@ -357,11 +361,12 @@ void UartTx_WriteValue(uint8 value) {
 }
 ```
 
-ソースファイルには、API関数の実体だけが記述されています。与えられたデータ`value`をレジスタに書き込むだけの関数です。
+ソースファイル (UartTx.c) には、API関数の実体だけが記述されています。
+与えられたデータ`value`をレジスタに書き込むだけの関数です。
 
 ## DMA Capabilityファイル
 
-**DMA Capability File**は、**DMA Wizard**でソースコードのひな型を生成する際に参照される情報を格納したファイルです。
+**DMA Capability File** (NtanUartTx_v1_0.cydmacap) は、**DMA Wizard**でソースコードのひな型を生成する際に参照される情報を格納したファイルです。
 
 ```xml:NtanUartTx_v1_0.cydmacap
 <DMACapability>
