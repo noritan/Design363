@@ -713,5 +713,5 @@ uint8 packet[256];
 
 
 [repository]:https://github.com/noritan/Design363
-[CY8CKIT-042 でロジアナを作った ~UART編~]:https://noritan-micon.blog.so-net.ne.jp/2015-10-11-1
+[CY8CKIT-042 でロジアナを作った \~UART編\~]:https://noritan-micon.blog.so-net.ne.jp/2015-10-11-1
 [PSoC 3 で、 DMA 対応倍増器を作った]:https://noritan-micon.blog.so-net.ne.jp/2013-06-09
