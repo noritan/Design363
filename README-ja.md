@@ -394,15 +394,18 @@ void UartTx_WriteValue(uint8 value) {
 
 
 ### 回路図
-![GS004485.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/224737/ecc838b3-5d61-3a25-6386-5882624029ec.png "テスト回路(1)")
+![テスト回路(1)](./images/schematic1.png "テスト回路(1)")
 
-このコンポーネントは、出力信号を生成する目的で作れられていますので、信号をオシロスコープか何かで観測しなくてはなりません。しかし、ご安心ください。**PSoC 5LP**の豊富なハードウェアの力によって、テスト回路内部に**Logic Analyzer**まで内蔵してしまいました。詳しくは「[CY8CKIT-042 でロジアナを作った ~UART編~]」で書きました。
+このコンポーネントは、出力信号を生成する目的で作れられていますので、信号をオシロスコープか何かで観測しなくてはなりません。
+しかし、ご安心ください。
+**PSoC 5LP**の豊富なハードウェアの力によって、テスト回路内部に**Logic Analyzer**まで内蔵してしまいました。
+詳しくは「[CY8CKIT-042 でロジアナを作った \~UART編\~]」で書きました。
 
 内蔵の**Logic Analyzer**で観測する関係から、**UART**の通信速度は、20bpsに設定しています。
 
 ### プログラム
 
-プログラムは、以下のようになりました。
+"main.c" のプログラムは、以下のようになりました。
 
 ```C:main.c
 #include "project.h"
@@ -412,7 +415,8 @@ void UartTx_WriteValue(uint8 value) {
 #define SR1_SW1  (2)
 ```
 
-このプロジェクトは、**Status Register** `SR1`を使って`SW1`の状態と`dreq`信号を参照しながら動作します。ここでは、`SR1`の二つの入力のビット位置を定義しています。
+このプロジェクトは、**Status Register** `SR1`を使って`SW1`の状態と`dreq`信号を参照しながら動作します。
+ここでは、`SR1`の二つの入力のビット位置を定義しています。
 
 ```C:main.c
 // Statemachine declaration
@@ -423,7 +427,8 @@ void UartTx_WriteValue(uint8 value) {
 uint32 state = ST_IDLE;
 ```
 
-プログラム内でもステートマシンを使って**UART**へのデータ書き込みを管理しています。ステートマシンは、三つの状態を持っており、状態変数`state`を使っています。
+プログラム内でもステートマシンを使って**UART**へのデータ書き込みを管理しています。
+ステートマシンは、三つの状態を持っており、状態変数`state`を使っています。
 
 ```C:main.c
 // Data packet to be sent
@@ -431,7 +436,8 @@ const char phrase[] = "The quick brown fox jumps over the lazy dog. ";
 uint8 packet[8];
 ```
 
-このテストプロジェクトでは、**UART**から送信するデータは何でもよかったのですが、何でもいいデータを作成するために、あるパターンの言葉を決められた大きさのパケットに詰め込むプログラムを作成してしまいました。これで、どんな大きさのパケットにも対応できます。
+このテストプロジェクトでは、**UART**から送信するデータは何でもよかったのですが、何でもいいデータを作成するために、あるパターンの言葉を決められた大きさのパケットに詰め込むプログラムを作成してしまいました。
+これで、どんな大きさのパケットにも対応できます。
 
 ```C:main.c
 // Interrupt handling
@@ -442,7 +448,10 @@ CY_ISR(int_Sample_isr) {
 }
 ```
 
-**Logic Analyzer**で使用される周期割り込みを受けるInterrupt Service Routine (ISR)とそこで使用されるフラグが定義されています。フラグは、メインループのなかで参照されます。
+周期割り込みを受けるInterrupt Service Routine (ISR)を定義しています。
+周期割り込みは、**Logic Analyzer**で使用されます。
+いっしょに周期割り込みで使用されるフラグが定義されています。
+このフラグは、メインループのなかで参照されます。
 
 ```C:main.c
 // The main-loop
@@ -508,13 +517,18 @@ int main(void)
         }
 ```
 
-メインループには、二つの**dispatcher**が入っています。ひとつめは、ステートマシンの**dispatcher**です。
+メインループには、二つの**dispatcher**が入っています。
+ひとつめは、ステートマシンの**dispatcher**です。
 
-`ST_IDLE`状態では、`SW1`ボタンの押下を検出します。ボタンが押されたら`ST_SEND`状態に遷移します。
+`ST_IDLE`状態では、`SW1`ボタンの押下を検出します。
+ボタンが押されたら`ST_SEND`状態に遷移します。
 
-`ST_SEND`状態では、パケットからデータを送信します。`dreq`を確認して、`UartTx`の受付が可能であれば、`UartTx_WriteValue()`関数でデータを1バイト送信します。パケットのデータを送信し終えたら`ST_WAIT`状態に遷移します。
+`ST_SEND`状態では、パケットからデータを送信します。
+`dreq`を確認して、`UartTx`の受付が可能であれば、`UartTx_WriteValue()`関数でデータを1バイト送信します。
+パケットのデータを送信し終えたら`ST_WAIT`状態に遷移します。
 
-`ST_WAIT`状態では、`SW1`ボタンが離されたのを確認して`ST_IDLE`状態に戻ります。**debounce**の機能が必要であれば、`Pin_SW1`と`SR1`の間に**Debounce**コンポーネントを入れてください。
+`ST_WAIT`状態では、`SW1`ボタンが離されたのを確認して`ST_IDLE`状態に戻ります。
+**debounce**の機能が必要であれば、`Pin_SW1`と`SR1`の間に**Debounce**コンポーネントを入れてください。
 
 ```C:main.c
         // Logic analyzer dispatcher
@@ -526,15 +540,18 @@ int main(void)
 }
 ```
 
-二つ目の**dispatcher**では、**Logic Analyzer**の処理を行っています。といっても、周期割り込みのフラグが立っていたら、`Probe`コンポーネントの値をそのまま**UART**出力に流すだけです。
+二つ目の**dispatcher**では、**Logic Analyzer**の処理を行っています。
+といっても、周期割り込みのフラグが立っていたら、`Probe`コンポーネントの値をそのまま**UART**出力に流すだけです。
 
 ### 実行結果
 
-実行結果を**Bridge Control Panel**で観測しました。波形は上から"SW1" "DREQ" "TX"の順です。
+実行結果を**Bridge Control Panel**で観測しました。
+波形は上から"SW1" "DREQ" "TX"の順です。
 
-![GS004481.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/224737/cc2e8e78-ec39-fc77-e69c-c7714b12685f.png "実行結果")
+![実行結果 (1)](./images/waveform1.png "実行結果 (1)")
 
-切れ目なく8バイトのデータが送信されていることが分かります。また、"DREQ"の動きから、４バイト目を送信し始めるタイミングで**FIFO**にすべてのデータを送り終えたことがわかります。
+切れ目なく8バイトのデータが送信されていることが分かります。
+また、"DREQ"の動きから、４バイト目を送信し始めるタイミングで**FIFO**にすべてのデータを送り終えたことがわかります。
 
 
 ## テストプロジェクト(2) - UartTxTest02
