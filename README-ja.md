@@ -655,15 +655,17 @@ uint8 DMA_UartTx_TD[1];
 
 ### 回路図
 
-![GS004490.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/224737/c01e0379-80ad-da00-826b-82b836c4389f.png "回路図(3)")
+![回路図(3)](./images/schematic3.png "回路図(3)")
 
-**Logic Analyzer**部分を取り払って、`UartTx`の出力を直接`Tx_1`出力に接続しました。これで、**USBUART**を介して**PC**でデータを観測できます。
+**Logic Analyzer**部分を取り払って、`UartTx`の出力を直接`Tx_1`出力に接続しました。
+これで、**USBUART**を介して**PC**でデータを観測できます。
 
-ボーレートは、115200bpsを使います。**USBUART**がこれより高いところに対応していないようなので。
+ボーレートは、115200bpsを使います。
+**USBUART**がこれより高いところに対応していないようなので。
 
 ### プログラム
 
-このプロジェクトでは、"Tera Term"を使って出力を観測するので、パケットのサイズを256に拡張しています。
+このプロジェクトでは、"Tera Term"を使って出力を観測するので、パケットのサイズを256バイトに拡張しています。
 
 ```C:main.c
 // Data packet to be sent
@@ -707,19 +709,15 @@ uint8 packet[256];
 
 ### 実行結果
 
-![GS004491.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/224737/565af8fe-4fa0-9af5-94e2-a28d8affc725.png "実行結果(3)")
+![実行結果(3)](./images/output3.png "実行結果(3)")
 
 `SW1`を押すと、256バイトずつ文字が流れてきます。
 
 
-## GitHub リポジトリ
-[GitHub Repository][repository]
-
 ## 関連記事
-[CY8CKIT-042 でロジアナを作った ~UART編~][]
-[PSoC 3 で、 DMA 対応倍増器を作った][]
+* [CY8CKIT-042 でロジアナを作った \~UART編\~][]
+* [PSoC 3 で、 DMA 対応倍増器を作った][]
 
 
-[repository]:https://github.com/noritan/Design363
 [CY8CKIT-042 でロジアナを作った \~UART編\~]:https://noritan-micon.blog.so-net.ne.jp/2015-10-11-1
 [PSoC 3 で、 DMA 対応倍増器を作った]:https://noritan-micon.blog.so-net.ne.jp/2013-06-09
