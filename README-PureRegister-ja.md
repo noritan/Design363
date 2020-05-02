@@ -160,7 +160,7 @@ endmodule
 ## APIヘッダ (NtanPureRegister.h)
 
 ヘッダファイルには、レジスタアドレスの読み替えマクロと、関数宣言が入っています。
-ここでは、 A0 と A1 の二つのレジスタしか定義していないので、 D0 と D1 が欲しい方は追加してください。
+ここでは、 A0 と A1 の二つのレジスタについての関数のみを定義しているので、 D0 と D1 が欲しい方は追加してください。
 
 ```C:NtanPureRegister.h
 /* ========================================
@@ -233,10 +233,10 @@ void `$INSTANCE_NAME`_WriteA1(uint8 value) {
 
 ## DMA Capabilityファイル (NtanPureRegister_v1_0.cydmacap)
 
-このファイルは、 DMA Wizard から参照してもらい、 DMA 制御プログラムの断片を作ります。
+DMA Wizard は、このファイルを参照して DMA 制御プログラムの断片を作ります。
 作りはしたけど、まだ使ってないから、誰か試してくださいな。
 
-```xml:NtanPureRegister_v1_0.cydmacap
+```XML:NtanPureRegister_v1_0.cydmacap
 <?xml version="1.0" encoding="us-ascii"?>
 
 
