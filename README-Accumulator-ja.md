@@ -4,20 +4,34 @@ tags: PSoC5 UDB Verilog Datapath
 author: noritan_org
 slide: false
 ---
-データパスを使った簡単な例として、累算器を作成しました。**FIFO**を**Input Mode**で使用しており、**DMA**にも対応しています。
 
-![GS004429.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/224737/7378ff9a-32d2-2766-5731-2783829fc539.png)
+# 累算器の作成
 
-##累算器とは
+データパスを使った簡単な例として、累算器を作成しました。
+**FIFO**を**Input Mode**で使用しており、**DMA**にも対応しています。
 
-累算(accumulation)は、入力された値を次々と足しこんでいく事を表した言葉です。累算器(accumulator)は、入力された値の和を計算する装置を表しています。
-入力として取り込む「足し込む値」は、データパスの**FIFO**で受け取ります。データパスの**FIFO**に値を書き込むと累算動作が開始されます。
-累算の値は、データパスの**A0**レジスタに格納されます。**FIFO**にデータをすべて書き込んだら**A0**レジスタから累算値を取り出します。
-累算器には、二つの出力**dreq**と**busy**があります。**dreq**は、**FIFO**に新たに値を書き込むことができる事(FIFO not full)を示します。また、**busy**は、**FIFO**に書き込まれた値のすべての処理が終了していない事を示します。
+![テスト回路](./images/Accumulator-schematic.png "テスト回路")
 
-##Verilog記述
+## 累算器とは
 
-累算器は、**Verilog**で記述されています。中身は、3状態のステートマシンとデータパスから構成されています。
+累算(accumulation)は、入力された値を次々と足しこんでいく事を表した言葉です。
+累算器(accumulator)は、入力された値の和を計算する装置を表しています。
+
+入力として取り込む「足し込む値」は、データパスの**FIFO**で受け取ります。
+データパスの**FIFO**に値を書き込むと累算動作が開始されます。
+
+累算された結果は、データパスの**A0**レジスタに格納されます。
+**FIFO**にデータをすべて書き込んだら**A0**レジスタから累算値を取り出します。
+
+累算器には、二つの出力`dreq`と`busy`があります。
+`dreq`は、**FIFO**に新たに値を書き込むことができる事(FIFO not full)を示します。
+また、`busy`は、**FIFO**に書き込まれた値のすべての処理が終了していない事を示します。
+
+
+## Verilog記述 (Accumulator8_v1_0.v)
+
+累算器は、**Verilog**で記述されています。
+中身は、3状態のステートマシンとデータパスから構成されています。
 
 ```verilog:Accumulator8_v1_0.v
 module Accumulator8_v1_0 (
@@ -49,7 +63,9 @@ reg             d0_load;        // LOAD FIFO into D0
 reg             busy_reg;       // BUSY output flag
 ```
 
-最初の部分は、localparam, wire, regの宣言です。ST_で始まるlocalparamが状態コードを表しています。また、CS_で始まるlocalparamはデータパスのConfiguration RAMに与えるアドレスを表しています。
+最初の部分は、`localparam`, `wire`, `reg`の宣言です。
+`ST_`で始まる`localparam`が状態コードを表しています。
+また、`CS_`で始まる`localparam`はデータパスのConfiguration RAMに与えるアドレスを表しています。
 
 ```verilog:Accumulator8_v1_0.v
 // State machine behavior
@@ -80,11 +96,16 @@ always @(posedge clock or posedge reset) begin
 end
 assign          state = state_reg;
 ```
-ステートマシンの状態コードは2ビットです。3状態が定義されていて、残りの1状態が未定義です。ステートマシンは、以下のように動作します。
 
-- ST_IDLE状態でFIFOにデータが到着するのを待ちます。データが到着したら、ST_GET状態に遷移します。
-- ST_GET状態では、FIFOからデータを取り出して、D0レジスタに格納して、ST_ADD状態に遷移します。
-- ST_ADD状態では、A0レジスタの値にD0レジスタの値を加算して、A0レジスタに書き戻します。FIFOに次のデータが用意されていればST_GET状態に遷移し、FIFOが空であればST_IDLE状態に遷移します。
+ステートマシンの状態コードは2ビットです。
+3状態が定義されていて、残りの1状態が未定義です。
+ステートマシンは、以下のように動作します。
+
+- `ST_IDLE`状態で**FIFO**にデータが到着するのを待ちます。
+データが到着したら、`ST_GET`状態に遷移します。
+- `ST_GET`状態では、**FIFO**から取り出したデータを**D0**レジスタに格納して、`ST_ADD`状態に遷移します。
+- `ST_ADD`状態では、**A0**レジスタの値に**D0**レジスタの値を加算して、**A0**レジスタに書き戻します。
+**FIFO**に次のデータが用意されていれば`ST_GET`状態に遷移し、**FIFO**が空であれば`ST_IDLE`状態に遷移します。
 
 ```verilog:Accumulator8_v1_0.v
 // Internal control signals
@@ -122,10 +143,10 @@ assign      busy = busy_reg;
 
 内部信号は、すべてステートマシンの状態で決定されます。
 
-- addr信号でデータパスのConfiguration RAMアドレスを指定します。
-- d0_load信号は、FIFOの値をD0レジスタに格納するタイミングを作っています。
-- busy_reg信号は、累算器が動作している時にアサートされる信号で、そのままbusy出力信号となっています。
-- dreq出力信号は、データパスが作成する"FIFO0 not FULL"信号をそのまま使用しています。
+- `addr`信号でデータパスのConfiguration RAMアドレスを指定します。
+- `d0_load`信号は、**FIFO**の値を`D0`レジスタに格納するタイミングを作っています。
+- `busy_reg`信号は、累算器が動作している時にアサートされる信号で、そのまま`busy`出力信号となっています。
+- `dreq`出力信号は、データパスが作成する"FIFO0 not FULL"信号をそのまま使用しています。
 
 ```verilog:Accumulator8_v1_0.v
 cy_psoc3_dp8 #(.cy_dpconfig_a(
@@ -209,7 +230,9 @@ cy_psoc3_dp8 #(.cy_dpconfig_a(
 endmodule
 ```
 
-最後にデータパスの宣言を行っています。このコンポーネントでは、データパスを一つ使用しています。
+最後にデータパスの宣言を行っています。
+このコンポーネントでは、データパスを一つ使用しています。
+
 
 ## APIファイル
 
