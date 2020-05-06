@@ -12,10 +12,18 @@ slide: false
 
 ![テスト回路](./images/Accumulator-schematic.png "テスト回路")
 
-## 累算器とは
+
+## 累算器コンポーネント (Accumulator8_v1_0)
 
 累算(accumulation)は、入力された値を次々と足しこんでいく事を表した言葉です。
 累算器(accumulator)は、入力された値の和を計算する装置を表しています。
+
+
+### シンボル (Accumulator8_v1_0.cysym)
+
+累算器のシンボルは、このようになっています。
+
+![シンボル](./images/Accumulator-symbol.png "シンボル")
 
 入力として取り込む「足し込む値」は、データパスの**FIFO**で受け取ります。
 データパスの**FIFO**に値を書き込むと累算動作が開始されます。
@@ -28,7 +36,7 @@ slide: false
 また、`busy`は、**FIFO**に書き込まれた値のすべての処理が終了していない事を示します。
 
 
-## Verilog記述 (Accumulator8_v1_0.v)
+### Verilog記述 (Accumulator8_v1_0.v)
 
 累算器は、**Verilog**で記述されています。
 中身は、3状態のステートマシンとデータパスから構成されています。
@@ -234,12 +242,10 @@ endmodule
 このコンポーネントでは、データパスを一つ使用しています。
 
 
-## APIファイル
+### ヘッダファイル (ACC.h)
 
 コンポーネントのAPIは、ヘッダファイルとソースファイルのそれぞれ一つずつで構成されています。
 ここでは、インスタンスのファイルを表示しています。
-
-### ヘッダファイル (ACC.h)
 
 ```c:ACC.h
 #if !defined(ACCUMULATOR8_ACC_H)
