@@ -236,7 +236,10 @@ endmodule
 
 ## APIファイル
 
-コンポーネントのAPIは、ヘッダファイルとソースファイルのそれぞれ一つずつで構成されています。ここでは、インスタンスのファイルを表示しています。
+コンポーネントのAPIは、ヘッダファイルとソースファイルのそれぞれ一つずつで構成されています。
+ここでは、インスタンスのファイルを表示しています。
+
+### ヘッダファイル (ACC.h)
 
 ```c:ACC.h
 #if !defined(ACCUMULATOR8_ACC_H)
@@ -263,10 +266,14 @@ void ACC_ClearAccumulator(void);
 #endif  // ACCUMULATOR8_ACC_H
 ```
 
-ヘッダファイルでは、三つのAPI関数とレジスタへのアドレスが宣言されています。関数については、後述します。
+ヘッダファイルでは、三つのAPI関数とレジスタへのアドレスが宣言されています。
+関数については、後述します。
 
-- ACC_INPUT_PTRは、**FIFO**の書き込みアドレスを指しています。
-- ACC_ACCUMULATOR_PTRは、**A0**レジスタのアドレスを指しています。
+- `ACC_INPUT_PTR`は、**FIFO**の書き込みアドレスを指しています。
+- `ACC_ACCUMULATOR_PTR`は、**A0**レジスタのアドレスを指しています。
+
+
+### ソースファイル (ACC.c)
 
 ```C:ACC.c
 #include "ACC.h"
@@ -284,13 +291,14 @@ void ACC_ClearAccumulator(void) {
 }
 ```
 
-ソースコードでは、三つの関数が定義されています。
+ソースファイルでは、三つの関数が定義されています。
 
-- ACC_WriteValue()関数は、**FIFO**へ値を書き込みます。
-- ACC_ReadAccumulator()関数は、累算された値を**A0**レジスタから読み出します。
-- ACC_ClearAccumulator()関数は、**A0**レジスタの値をゼロにクリアします。
+- `ACC_WriteValue()`関数は、**FIFO**へ値を書き込みます。
+- `ACC_ReadAccumulator()`関数は、累算された値を**A0**レジスタから読み出します。
+- `ACC_ClearAccumulator()`関数は、**A0**レジスタの値をゼロにクリアします。
 
-# DMA Capabilityファイル
+
+## DMA Capabilityファイル (Accumulator8_v1_0.cydmacap)
 
 **DMA Capability File**は、**DMA Wizard**でソースコードのひな型を生成する際に参照される情報を格納したファイルです。
 
@@ -312,15 +320,22 @@ void ACC_ClearAccumulator(void) {
 
 ヘッダファイルで宣言されたアドレスが、ここで使用されています。
 
-## 累算器のテスト回路
 
-![GS004429.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/224737/450771b3-129a-24ba-527e-7aca03c13b84.png)
+## 累算器のテストプロジェクト (Accumulator8Test01)
 
-累算器のテスト回路では、累算器に4Hzの遅いクロックを与えて**目で**動作を確認しています。**Pin_Busy**出力端子には、LEDが接続されていて、累算器の動作状態を見ることができます。ソフトウェアでは、**DMA**による書き込みとソフトウェアによる書き込みを行っています。
+![テスト回路](./images/Accumulator-schematic.png "テスト回路")
 
-- DMAでの書込みでは、ソフトウェアでトリガをかけた後、**busy**信号の立下りにより割り込みが発生するまで待ちます。そして、累算器の値を読み出して**UART**に結果を出力しています。
+累算器のテスト回路では、累算器に4Hzの遅いクロックを与えて**目で**動作を確認しています。
+**Pin_Busy**出力端子には、LEDが接続されていて、累算器の動作状態を見ることができます。
 
-```main.c
+### ソフトウェア (main.c)
+
+ソフトウェアでは、**DMA**による書き込みとソフトウェアによる書き込みを行っています。
+
+- DMAでの書込みでは、ソフトウェアでトリガをかけた後、`busy`信号の立下りにより割り込みが発生するまで待ちます。
+そして、累算器の値を読み出して**UART**に結果を出力しています。
+
+```C:main.c
         // Clear the accumulator
         ACC_ClearAccumulator();
 
@@ -339,7 +354,8 @@ void ACC_ClearAccumulator(void) {
         UART_PutString(sbuf);
 ```
 
-- ソフトウェアによる書き込みでは、**dreq**信号を**Status Register**によって監視しながら1バイトずつ書き込みを行います。こちらも割り込みが発生するまで待ち、累算器の値を読み出して**UART**に結果を出力しています。
+- ソフトウェアによる書き込みでは、`dreq`信号を**Status Register**によって監視しながら1バイトずつ書き込みを行います。
+こちらも割り込みが発生するまで待ち、累算器の値を読み出して**UART**に結果を出力しています。
 
 ```main.c
         // Clear the accumulator
@@ -362,11 +378,3 @@ void ACC_ClearAccumulator(void) {
         sprintf(sbuf, "ACC=%ld\r\n", result);
         UART_PutString(sbuf);
 ```
-## 関連記事
-[汎用レジスタの作成][PureRegister]
-
-## リポジトリ
-[GitHub Repository][repository]
-
-[repository]:https://github.com/noritan/Design363
-[PureRegister]:https://noritan-micon.blog.so-net.ne.jp/2019-07-08
