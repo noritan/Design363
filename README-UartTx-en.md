@@ -18,7 +18,6 @@ Because this component is assumed to be used as a jig, it is designed as simple 
 
 At first, the input signals `clock` and `reset` are mandatory because of a synchronous system.
 The input signal `clock` is directly used as a bit clock.
-用します。
 
 The output signal `tx` is the **UART** signal output.
 This component can be used as a transmitter when the `tx` signal is directly connected to an output pin.
@@ -394,22 +393,22 @@ The register address MACRO declared in the API header file is used here.
 
 ## Test Project (1) - UartTxTest01
 
-コンポーネントをテストするためのプロジェクトを作成しました。最初は、ソフトウェアで直接書き込むモデルです。
+A test project is created to test the component.
+The first project writes data directly using a software.
 
 
-### 回路図
-![テスト回路(1)](./images/schematic1.png "テスト回路(1)")
+### Schematic
+![test schematic(1)](./images/schematic1.png "test schematic(1)")
 
-このコンポーネントは、出力信号を生成する目的で作れられていますので、信号をオシロスコープか何かで観測しなくてはなりません。
-しかし、ご安心ください。
-**PSoC 5LP**の豊富なハードウェアの力によって、テスト回路内部に**Logic Analyzer**まで内蔵してしまいました。
-詳しくは「[CY8CKIT-042 でロジアナを作った \~UART編\~]」で書きました。
+Because this component is designed to output a signal, an equipment like an oscilloscope must be prepared to observe the output signal.
+But, don't worry.
+By the **PSoC 5LP**'s powerful hardware, a **Logic Analyzer** is implemented in the test project.
 
-内蔵の**Logic Analyzer**で観測する関係から、**UART**の通信速度は、20bpsに設定しています。
+Because the output signal is observed by the internal **Logic Analyzer**, the **UART**'s baud rate speed is set to 20bps.
 
-### プログラム
+### Program (main.c)
 
-"main.c" のプログラムは、以下のようになりました。
+Following is the program in "main.c" file.
 
 ```C:main.c
 #include "project.h"
@@ -419,8 +418,8 @@ The register address MACRO declared in the API header file is used here.
 #define SR1_SW1  (2)
 ```
 
-このプロジェクトは、**Status Register** `SR1`を使って`SW1`の状態と`dreq`信号を参照しながら動作します。
-ここでは、`SR1`の二つの入力のビット位置を定義しています。
+This project works by refering the **Status Register** `SR1` to get the status of the switch `SW1` and the `dreq` signal.
+There are MACRO declarations to specify the bit position of two inputs of `SR1`.
 
 ```C:main.c
 // Statemachine declaration
@@ -431,8 +430,8 @@ The register address MACRO declared in the API header file is used here.
 uint32 state = ST_IDLE;
 ```
 
-プログラム内でもステートマシンを使って**UART**へのデータ書き込みを管理しています。
-ステートマシンは、三つの状態を持っており、状態変数`state`を使っています。
+There is a statemachine to control the write sequence to the component.
+The statemachine has three states and uses the state variable `state`.
 
 ```C:main.c
 // Data packet to be sent
@@ -440,8 +439,8 @@ const char phrase[] = "The quick brown fox jumps over the lazy dog. ";
 uint8 packet[8];
 ```
 
-このテストプロジェクトでは、**UART**から送信するデータは何でもよかったのですが、何でもいいデータを作成するために、あるパターンの言葉を決められた大きさのパケットに詰め込むプログラムを作成してしまいました。
-これで、どんな大きさのパケットにも対応できます。
+In this test project, any data can be sent as **UART** output.
+To make an "any data" a program is created to fill a specific phrase into a fixed size of packet to support any size of packet.
 
 ```C:main.c
 // Interrupt handling
@@ -452,10 +451,10 @@ CY_ISR(int_Sample_isr) {
 }
 ```
 
-周期割り込みを受けるInterrupt Service Routine (ISR)を定義しています。
-周期割り込みは、**Logic Analyzer**で使用されます。
-いっしょに周期割り込みで使用されるフラグが定義されています。
-このフラグは、メインループのなかで参照されます。
+An Interrupt Service Routine (ISR) is defined to be invoked by a periodic interrupt.
+The periodic interrpt is used by the **Logic Analyzer**.
+There is a flag used by the periodic interrupt together.
+This flag is referred in the main loop.
 
 ```C:main.c
 // The main-loop
@@ -470,7 +469,7 @@ int main(void)
     int_Sample_StartEx(int_Sample_isr);
 ```
 
-`main()`関数では、最初に**Logic Analyzer**で使用される`Probe_UART`と`int_Sample`のふたつのコンポーネントが初期設定されます。
+At first in the `main()` function, two components `Probe_UART` and `int_Sample` used in the **Logic Analyzer** are initialized.
 
 ```C:main.c
     // Initialize the statemachine task
@@ -486,7 +485,7 @@ int main(void)
     }
 ```
 
-ステートマシンの初期設定のあと、送信データに使用されるパケットが作成されます。
+After the statemachin initialization, a packet is created to be used as a transmitter data.
 
 ```C:main.c
     for(;;)
@@ -521,18 +520,18 @@ int main(void)
         }
 ```
 
-メインループには、二つの**dispatcher**が入っています。
-ひとつめは、ステートマシンの**dispatcher**です。
+There are two **dispatcher** in the main loop.
+The first one is the statemachine's **dispatcher**.
 
-`ST_IDLE`状態では、`SW1`ボタンの押下を検出します。
-ボタンが押されたら`ST_SEND`状態に遷移します。
+In the `ST_IDLE` state, the push event of the `SW1` button is detected.
+When the `SW1` button is pushed, the statemachine makes a transition to the `ST_SEND` state.
 
-`ST_SEND`状態では、パケットからデータを送信します。
-`dreq`を確認して、`UartTx`の受付が可能であれば、`UartTx_WriteValue()`関数でデータを1バイト送信します。
-パケットのデータを送信し終えたら`ST_WAIT`状態に遷移します。
+In the `ST_SEND` state, a byte of data packet is sent.
+When the `dreq` is asserted (`UartTx` can accept a data) a byte of data is sent using the `UartTx_WriteValue()` function.
+The statemachine makes a transition to the `ST_WAIT` state after writing a byte.
 
-`ST_WAIT`状態では、`SW1`ボタンが離されたのを確認して`ST_IDLE`状態に戻ります。
-**debounce**の機能が必要であれば、`Pin_SW1`と`SR1`の間に**Debounce**コンポーネントを入れてください。
+In the `ST_WAIT` state, the release event of the `SW1` button is detected and the state machine makes a transition to the `ST_IDLE` state.
+If you need a **debounce** feature, please add a **Debounce** component between the `Pin_SW1` input pin and the `SR1` status register.
 
 ```C:main.c
         // Logic analyzer dispatcher
@@ -544,18 +543,18 @@ int main(void)
 }
 ```
 
-二つ目の**dispatcher**では、**Logic Analyzer**の処理を行っています。
-といっても、周期割り込みのフラグが立っていたら、`Probe`コンポーネントの値をそのまま**UART**出力に流すだけです。
+There is a **Logic Analyzer** process in the second **dispatcher**.
+It is very simple that sending a value of the `Probe` component using the `Probe_UART` component.
 
-### 実行結果
+### Execution Result
 
-実行結果を**Bridge Control Panel**で観測しました。
-波形は上から"SW1" "DREQ" "TX"の順です。
+The execution result is observed by the **Bridge Control Panel**.
+Waveforms are "SW1" "DREQ" and "TX" beginning at the top.
 
-![実行結果(1)](./images/waveform1.png "実行結果(1)")
+![result(1)](./images/waveform1.png "result(1)")
 
-切れ目なく8バイトのデータが送信されていることが分かります。
-また、"DREQ"の動きから、４バイト目を送信し始めるタイミングで**FIFO**にすべてのデータを送り終えたことがわかります。
+It was found that eight bytes of data are sent without additional gaps.
+It was also found from the "DREQ" behavior that all data are written to the **FIFO** when the transmitting of the 4th byte is started.
 
 
 ## テストプロジェクト(2) - UartTxTest02
